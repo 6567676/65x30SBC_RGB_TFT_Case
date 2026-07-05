@@ -9,7 +9,7 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/spi_master.h"
-#include "driver/gpio.h"1
+#include "driver/gpio.h"
 #include "esp_flash.h"
 #include "esp_heap_caps.h"
 
