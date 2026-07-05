@@ -19,13 +19,18 @@ def get_snapshot():
     return files
 
 def git_push():
-    subprocess.run(["git", "add", "."], cwd=WATCH_DIR, capture_output=True)
-    result = subprocess.run(["git", "status", "--porcelain"], cwd=WATCH_DIR, capture_output=True, text=True)
-    if result.stdout.strip():
-        subprocess.run(["git", "commit", "-m", f"auto sync {time.strftime('%Y-%m-%d %H:%M:%S')}"], cwd=WATCH_DIR, capture_output=True)
-        subprocess.run(["git", "push"], cwd=WATCH_DIR, capture_output=True)
+    subprocess.run(["git", "add", "."], cwd=WATCH_DIR)
+    result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=WATCH_DIR)
+    if result.returncode == 0:
+        return
+    subprocess.run(["git", "commit", "-m", f"auto sync {time.strftime('%Y-%m-%d %H:%M:%S')}"], cwd=WATCH_DIR)
+    r = subprocess.run(["git", "push"], cwd=WATCH_DIR, capture_output=True, text=True)
+    if r.returncode == 0:
         print(f"[{time.strftime('%H:%M:%S')}] 同步完成")
+    else:
+        print(f"[{time.strftime('%H:%M:%S')}] 推送失败: {r.stderr}")
 
+print("监听中 | 1Hz检测 | 1s防抖")
 last_snapshot = get_snapshot()
 pending = False
 change_time = 0
