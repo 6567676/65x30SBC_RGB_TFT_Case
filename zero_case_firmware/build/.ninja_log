@@ -1163,3 +1163,10 @@
 458	1080	8049604241843314	D:/zero_case/zero_case_firmware/build/bootloader/bootloader.map	22ecb0e9b8dc679c
 589	4715	8049663648409106	esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj	13d6a72fc862425a
 4726	5103	8049663653279546	esp-idf/main/libmain.a	e31049be2c8c3fbc
+5104	33002	8049663931462488	esp-idf/esp_system/ld/sections.ld	2dfdf69bb31161fe
+5104	33002	8049663931462488	D:/zero_case/zero_case_firmware/build/esp-idf/esp_system/ld/sections.ld	2dfdf69bb31161fe
+33002	40278	8049664004508511	app-template.elf	e55f8165952959ea
+40279	41125	8049664013519405	.bin_timestamp	fcdb933f78a21a5f
+40279	41125	8049664013519405	D:/zero_case/zero_case_firmware/build/.bin_timestamp	fcdb933f78a21a5f
+41125	41400	0	esp-idf/esptool_py/CMakeFiles/app_check_size	2a93d8867da6386a
+41125	41400	0	D:/zero_case/zero_case_firmware/build/esp-idf/esptool_py/CMakeFiles/app_check_size	2a93d8867da6386a
