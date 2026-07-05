@@ -37,6 +37,7 @@ while True:
         last_snapshot = current_snapshot
         pending = True
         change_time = time.time()
+        print(f"[{time.strftime('%H:%M:%S')}] 检测到变化")
     if pending and (time.time() - change_time) >= DEBOUNCE:
         git_push()
         pending = False
