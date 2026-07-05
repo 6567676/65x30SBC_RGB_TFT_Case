@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#333333">
+
+    <ImageView
+        android:id="@+id/ivCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="matrix"
+        android:layout_above="@+id/timelineArea"/>
+
+    <FrameLayout
+        android:id="@+id/crop_box"
+        android:layout_width="320dp"
+        android:layout_height="172dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/crop_border"/>
+
+    <LinearLayout
+        android:id="@+id/timelineArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnConfirm"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="4dp"
+        android:background="#333333"
+        android:visibility="gone">
+
+        <com.example.myapp.RangeSeekBar
+            android:id="@+id/rangeSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <TextView
+            android:id="@+id/tvTimeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00.0 - 00:00.0"
+            android:textColor="#cccccc"
+            android:textSize="13sp"
+            android:layout_marginTop="-7dp"
+            android:layout_marginLeft="7dp"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="确认上传"
+        android:textColor="#ffffff"
+        android:layout_marginBottom="20dp"
+        app:backgroundTint="#C9BAFF"/>
+
+</RelativeLayout>
