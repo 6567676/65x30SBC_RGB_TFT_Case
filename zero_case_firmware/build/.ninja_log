@@ -1145,3 +1145,11 @@
 374087	374469	8049607302781185	esp-idf/wifi_provisioning/libwifi_provisioning.a	472ce5add2413e89
 372114	376439	8049607321672740	esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj	13d6a72fc862425a
 376441	376720	8049607325303016	esp-idf/main/libmain.a	e31049be2c8c3fbc
+376721	407166	8049607628918081	esp-idf/esp_system/ld/sections.ld	2dfdf69bb31161fe
+376721	407166	8049607628918081	D:/zero_case/zero_case_firmware/build/esp-idf/esp_system/ld/sections.ld	2dfdf69bb31161fe
+407167	407830	8049607635788662	CMakeFiles/app-template.elf.dir/project_elf_src_esp32s3.c.obj	12c826abc57c3a2e
+407833	416251	8049607719705577	app-template.elf	e55f8165952959ea
+416252	417511	8049607733206692	.bin_timestamp	fcdb933f78a21a5f
+416252	417511	8049607733206692	D:/zero_case/zero_case_firmware/build/.bin_timestamp	fcdb933f78a21a5f
+417512	417807	0	esp-idf/esptool_py/CMakeFiles/app_check_size	2a93d8867da6386a
+417512	417807	0	D:/zero_case/zero_case_firmware/build/esp-idf/esptool_py/CMakeFiles/app_check_size	2a93d8867da6386a
