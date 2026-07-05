@@ -6,7 +6,7 @@
 #include "freertos/semphr.h"
 #include "esp_log.h"
 #include "esp_timer.h"
-#include "nvs_flash.h"1
+#include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
