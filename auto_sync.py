@@ -24,9 +24,8 @@ def git_push():
     if result.stdout.strip():
         subprocess.run(["git", "commit", "-m", f"auto sync {time.strftime('%Y-%m-%d %H:%M:%S')}"], cwd=WATCH_DIR, capture_output=True)
         subprocess.run(["git", "push"], cwd=WATCH_DIR, capture_output=True)
-        print(f"[{time.strftime('%H:%M:%S')}] 已同步")
+        print(f"[{time.strftime('%H:%M:%S')}] 同步完成")
 
-print("监听中 | 1Hz检测 | 1s防抖")
 last_snapshot = get_snapshot()
 pending = False
 change_time = 0
