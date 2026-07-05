@@ -115,3 +115,5 @@
 44289	46392	8049604708571865	D:/zero_case/zero_case_firmware/build/bootloader/.bin_timestamp	b3feed4f30dd49e8
 46393	47171	0	esp-idf/esptool_py/CMakeFiles/bootloader_check_size	1545d2615886acdc
 46393	47171	0	D:/zero_case/zero_case_firmware/build/bootloader/esp-idf/esptool_py/CMakeFiles/bootloader_check_size	1545d2615886acdc
+69	349	0	esp-idf/esptool_py/CMakeFiles/bootloader_check_size	1545d2615886acdc
+69	349	0	D:/zero_case/zero_case_firmware/build/bootloader/esp-idf/esptool_py/CMakeFiles/bootloader_check_size	1545d2615886acdc

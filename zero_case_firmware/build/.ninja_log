@@ -1153,3 +1153,13 @@
 416252	417511	8049607733206692	D:/zero_case/zero_case_firmware/build/.bin_timestamp	fcdb933f78a21a5f
 417512	417807	0	esp-idf/esptool_py/CMakeFiles/app_check_size	2a93d8867da6386a
 417512	417807	0	D:/zero_case/zero_case_firmware/build/esp-idf/esptool_py/CMakeFiles/app_check_size	2a93d8867da6386a
+458	1080	8049604241843314	bootloader-prefix/src/bootloader-stamp/bootloader-build	22ecb0e9b8dc679c
+458	1080	8049604241843314	bootloader/bootloader.elf	22ecb0e9b8dc679c
+458	1080	8049604241843314	bootloader/bootloader.bin	22ecb0e9b8dc679c
+458	1080	8049604241843314	bootloader/bootloader.map	22ecb0e9b8dc679c
+458	1080	8049604241843314	D:/zero_case/zero_case_firmware/build/bootloader-prefix/src/bootloader-stamp/bootloader-build	22ecb0e9b8dc679c
+458	1080	8049604241843314	D:/zero_case/zero_case_firmware/build/bootloader/bootloader.elf	22ecb0e9b8dc679c
+458	1080	8049604241843314	D:/zero_case/zero_case_firmware/build/bootloader/bootloader.bin	22ecb0e9b8dc679c
+458	1080	8049604241843314	D:/zero_case/zero_case_firmware/build/bootloader/bootloader.map	22ecb0e9b8dc679c
+589	4715	8049663648409106	esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj	13d6a72fc862425a
+4726	5103	8049663653279546	esp-idf/main/libmain.a	e31049be2c8c3fbc
