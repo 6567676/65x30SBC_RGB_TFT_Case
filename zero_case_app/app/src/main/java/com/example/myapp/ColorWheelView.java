@@ -89,7 +89,6 @@ public class ColorWheelView extends View {
         return true;
     }
 
-    // ← 新增：恢复颜色用，不触发回调
     public void setColor(int color) {
         this.currentColor = color;
         invalidate();
