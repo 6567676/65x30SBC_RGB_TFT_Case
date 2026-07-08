@@ -1104,7 +1104,7 @@ static void led_task(void *pvParameters) {
             led_strip_refresh(led_strip);
             vTaskDelay(pdMS_TO_TICKS(12));
         }
-    }1
+    }
 }
 
 // ==================== Flash 写入任务 ====================
