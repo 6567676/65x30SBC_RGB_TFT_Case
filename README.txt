@@ -9,6 +9,7 @@ st7789 1.47寸 320×172副屏支持显示图片与播放视频
 
 技术实现
 
+基于esp32 s3 n16r8  st7789  ws2812  rtos  android15
 双核四缓冲流水线，块匹配运动补偿+加权混色插帧，dma行扫描刷新，flash增量擦除顺序写入
 gamma曲线呼吸，脉冲灯效，频谱灯低通滤波，自定义gamma lut(解决ws2812高亮度变化小问题)
 nim ble零配对mtu 247，三通道分离指令/数据/回执，状态机分流，视频帧异步落flash，ack回执流控
@@ -35,4 +36,5 @@ ESP-IDF (Espressif Systems) — Apache 2.0
  led_strip (ESP-IDF component) — MIT
 
 其他
+
 此项目仅在瑞莎zero 3w，hyperOS 3完成验证
