@@ -42,7 +42,6 @@ import java.util.concurrent.Semaphore;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 
-
 @SuppressLint("MissingPermission")
 public class MainActivity extends AppCompatActivity {
 
@@ -165,10 +164,8 @@ public class MainActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         startInternalCapture(result.getResultCode(), result.getData());
                     } else {
-                        // 取消授权，外录还在跑，什么都不用做，改回状态就行
                         useMicSource = true;
                         btnAudioToggle.setText("律动 外录");
-                        tvStatus.setText("律动中");
                     }
                 });
 
@@ -192,12 +189,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // ===== Mode buttons — 点击时关闭律动 =====
         btnMode1.setOnClickListener(v -> { if (audioActive) stopAudio(); sendCmd("mode1"); });
         btnMode2.setOnClickListener(v -> { if (audioActive) stopAudio(); sendCmd("mode2"); });
         btnMode3.setOnClickListener(v -> { if (audioActive) stopAudio(); sendCmd("mode3"); });
 
-        // ===== 律动按钮 — 首次点击开启，已激活时点击切换声源 =====
         btnAudioToggle.setOnClickListener(v -> {
 
             if (!audioActive) {
@@ -212,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
 
         // ===== Color wheel =====
         colorWheel.setOnColorChangeListener(color -> {
@@ -276,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ==================== Permissions ====================
-
     private void checkBlePermissions() {
         if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
@@ -457,7 +450,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ==================== Write Flow Control ====================
-
     private boolean writeSync(byte[] value, long timeoutMs) {
         if (!bleConnected || btGatt == null || dataChar == null) return false;
         synchronized (writeLock) {
@@ -482,7 +474,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ==================== Audio ====================
-
     private void startAudio() {
         if (audioActive) return;
         if (useMicSource) {
@@ -643,7 +634,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 fft(re, im);
 
-                // ---- 7 段 → dBFS ----
+                // ---- 7 段  dBFS ----
                 int half = FFT_SIZE / 2;
                 int[] bandEdges = {20, 150, 300, 800, 2000, 4000, 8000, 16000};
                 for (int b = 0; b < BAND_COUNT; b++) {
@@ -902,7 +893,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ==================== Preview ====================
-
     private void startPreview(List<byte[]> jpegFrames) {
         stopPreviewAndCleanup();
         currentJpegFrames = jpegFrames;
@@ -948,7 +938,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ==================== Video Frame Storage ====================
-
     private void saveVideoFrames(List<byte[]> frames) {
         try {
             prefs.edit().remove("has_image").apply();
@@ -1006,7 +995,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ==================== Activity Results ====================
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1067,13 +1055,11 @@ public class MainActivity extends AppCompatActivity {
 
                 List<byte[]> frames = result.jpegFrames;
 
-                // 保存扔后台，不挡路
                 new Thread(() -> {
                     saveVideoFrames(frames);
                     runOnUiThread(() -> startPreview(frames));
                 }, "save_frames").start();
 
-                // 提取完立刻开始传输
                 sendVideoToMCU(frames);
 
             } catch (Exception e) {

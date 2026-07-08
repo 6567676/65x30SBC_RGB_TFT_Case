@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "app-template",
-    "project_version":    "1",
+    "project_version":    "a91dec9-dirty",
     "project_path":       "D:/zero_case/zero_case_firmware",
     "idf_path":           "D:/Espressif/frameworks/esp-idf-v5.3.1",
     "build_dir":          "D:/zero_case/zero_case_firmware/build",
@@ -11,7 +11,7 @@
     "app_elf":            "app-template.elf",
     "app_bin":            "app-template.bin",
     "build_type":         "flash_app",
-    "git_revision":       "GIT-NOTFOUND",
+    "git_revision":       "v5.3.1-dirty",
     "target":             "esp32s3",
     "rev":                "",
     "min_rev":            "0",

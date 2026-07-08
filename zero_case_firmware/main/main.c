@@ -1057,7 +1057,6 @@ static void ws2812_init(void) {
 static void led_task(void *pvParameters) {
     ws2812_init();
     uint8_t phase = 0;
-    static uint8_t audio_peaks[LED_NUM] = {0};
 
     while (1) {
         if (led_current_mode != prev_mode) { phase = 0; prev_mode = led_current_mode; }
@@ -1070,9 +1069,32 @@ static void led_task(void *pvParameters) {
             led_strip_refresh(led_strip);
             vTaskDelay(pdMS_TO_TICKS(100));
 
-                                    } else if (led_current_mode == LED_MODE_AUDIO) {
+        } else if (led_current_mode == LED_MODE_BREATH) {
+            uint8_t br = calc_brightness(phase++);
+            uint32_t r = (target_r * br * global_brightness) / 65025;
+            uint32_t g = (target_g * br * global_brightness) / 65025;
+            uint32_t b = (target_b * br * global_brightness) / 65025;
+            for (int i = 0; i < LED_NUM; i++) led_strip_set_pixel(led_strip, i, r, g, b);
+            led_strip_refresh(led_strip);
+            vTaskDelay(pdMS_TO_TICKS(5));
+
+        } else if (led_current_mode == LED_MODE_PULSE) {
             for (int i = 0; i < LED_NUM; i++) {
-                uint8_t band = (audio_bands[i] > 255) ? 255 : (uint8_t)audio_bands[i];
+                uint8_t br = calc_brightness((uint8_t)(phase + i * 36));
+                uint32_t r = (target_r * br * global_brightness) / 65025;
+                uint32_t g = (target_g * br * global_brightness) / 65025;
+                uint32_t b = (target_b * br * global_brightness) / 65025;
+                led_strip_set_pixel(led_strip, i, r, g, b);
+            }
+            led_strip_refresh(led_strip);
+            phase++;
+            vTaskDelay(pdMS_TO_TICKS(7));
+
+        } else if (led_current_mode == LED_MODE_AUDIO) {
+            static uint16_t smoothed[LED_NUM] = {0};
+            for (int i = 0; i < LED_NUM; i++) {
+                smoothed[i] = smoothed[i] * 3 / 10 + audio_bands[i] * 7 / 10; //此处修改频谱拾音灯平滑
+                uint8_t band = (smoothed[i] > 230) ? 230 : (uint8_t)smoothed[i];
                 uint8_t mapped = audio_lut[band * 75 / 255];
                 uint32_t r = (target_r * mapped) / 255;
                 uint32_t g = (target_g * mapped) / 255;
@@ -1080,6 +1102,7 @@ static void led_task(void *pvParameters) {
                 led_strip_set_pixel(led_strip, i, r, g, b);
             }
             led_strip_refresh(led_strip);
+            vTaskDelay(pdMS_TO_TICKS(12));
         }
     }
 }
