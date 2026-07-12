@@ -4,7 +4,7 @@
 android设备通过app与ble蓝牙控制灯效与副屏
 ws2812支持三种灯效，通过android设备的外录与内录实现频谱拾音灯
 st7789 1.47寸 320×172副屏支持显示图片与播放视频
-视频通过双流水四缓冲jpeg解码播放，最高70s 21fps，插帧后可达42fps
+视频最高70s 21fps@rgb565，插帧后可达42fps
 机箱两侧设有风扇主动散热
 
 技术实现
@@ -26,14 +26,6 @@ You are free to:
 Under the following terms:
   - NonCommercial only
 Full license: https://creativecommons.org/licenses/by-nc/4.0/
-
-许可声明
-
-ESP-IDF (Espressif Systems) — Apache 2.0
- NimBLE — Apache 2.0
- FreeRTOS — MIT
- esp_jpeg — MIT
- led_strip (ESP-IDF component) — MIT
 
 其他
 
