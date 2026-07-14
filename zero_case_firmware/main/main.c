@@ -78,11 +78,6 @@ typedef struct {
 } flash_write_item_t;
 static QueueHandle_t flash_queue = NULL;
 
-static volatile int64_t last_display_us = 0;
-static int disp_direct_count = 0;
-static int disp_blend_count = 0;
-static int64_t disp_log_t0 = 0;
-
 static uint8_t  jpeg_buf[JPEG_BUF_SIZE] __attribute__((aligned(4)));
 static int      jpeg_offset = 0;
 static int      jpeg_expected = 0;
@@ -188,7 +183,6 @@ static void save_image_to_flash(const uint8_t *data, size_t len) {
     esp_flash_write(NULL, data, MEDIA_DATA_START, len);
     memcpy(g_image_data, data, len);
     g_image_valid = true;
-    ESP_LOGI(TAG, "Image saved to flash");
 }
 
 static void load_image_from_flash(void) {
@@ -198,7 +192,6 @@ static void load_image_from_flash(void) {
     if (header[1] != IMAGE_SIZE) return;
     esp_flash_read(NULL, g_image_data, MEDIA_DATA_START, IMAGE_SIZE);
     g_image_valid = true;
-    ESP_LOGI(TAG, "Image loaded from flash");
 }
 
 // ==================== Flash: 视频存取 ====================
@@ -243,7 +236,6 @@ static void load_video_from_flash(void) {
         stored_frame_offsets[i] = stored_frame_offsets[i - 1] + stored_frame_sizes[i - 1];
     }
     has_stored_video = true;
-    ESP_LOGI(TAG, "Video loaded: %d frames", stored_video_frames);
 }
 
 static void load_media_from_flash(void) {
@@ -251,7 +243,6 @@ static void load_media_from_flash(void) {
     esp_flash_read(NULL, &magic, MEDIA_FLASH_ADDR, 4);
     if (magic == VIDEO_MAGIC) load_video_from_flash();
     else if (magic == IMAGE_MAGIC) load_image_from_flash();
-    else ESP_LOGW(TAG, "No saved media");
 }
 
 // ==================== LCD ====================
@@ -573,13 +564,9 @@ static int gap_event_cb(struct ble_gap_event *event, void *arg) {
             video_state = 0;
             start_advertising();
             break;
-        case BLE_GAP_EVENT_MTU:
-            ESP_LOGI(TAG, "MTU: %d", event->mtu.value);
-            break;
             case BLE_GAP_EVENT_SUBSCRIBE:
     if (event->subscribe.attr_handle == ack_chr_val_handle) {
         ack_subscribed = event->subscribe.cur_notify;
-        ESP_LOGI(TAG, "ACK notify %s", ack_subscribed ? "ON" : "OFF");
     }
     break;
     }
@@ -623,8 +610,6 @@ static int cmd_access_cb(uint16_t ch, uint16_t ah,
     if (len > sizeof(buf) - 1) len = sizeof(buf) - 1;
     ble_hs_mbuf_to_flat(ctxt->om, buf, len, NULL);
     buf[len] = '\0';
-
-    ESP_LOGI(TAG, "CMD: %s", buf);
 
         if (strstr(buf, "mode1")) {
         led_current_mode = LED_MODE_ON;
@@ -697,13 +682,11 @@ static int data_access_cb(uint16_t ch, uint16_t ah,
         jpeg_expected = 0;
         jpeg_receiving = true;
         playback_active = false;
-        ESP_LOGI(TAG, "JPEG receive start");
         return 0;
     }
 
     if (jpeg_receiving && jpeg_expected == 0 && len >= 4) {
         jpeg_expected = (tmp[0]<<24)|(tmp[1]<<16)|(tmp[2]<<8)|tmp[3];
-        ESP_LOGI(TAG, "JPEG size: %d", jpeg_expected);
         if (len > 4) {
             memcpy(jpeg_buf, tmp + 4, len - 4);
             jpeg_offset = len - 4;
@@ -722,7 +705,6 @@ static int data_access_cb(uint16_t ch, uint16_t ah,
         jpeg_offset += len;
         if (jpeg_offset >= jpeg_expected) {
             jpeg_receiving = false;
-            ESP_LOGI(TAG, "JPEG done: %d bytes", jpeg_offset);
             xSemaphoreGive(jpeg_decode_sem);
         }
         return 0;
@@ -741,8 +723,6 @@ static int data_access_cb(uint16_t ch, uint16_t ah,
         esp_flash_erase_region(NULL, MEDIA_FLASH_ADDR, MEDIA_SECTOR_SIZE);
         video_flash_addr = MEDIA_DATA_START;
         video_next_erase = MEDIA_DATA_START;
-
-        ESP_LOGI(TAG, "VIDEO receive start");
         send_ack(0x01);
         video_progress_percent = 0;
         return 0;
@@ -756,7 +736,6 @@ static int data_access_cb(uint16_t ch, uint16_t ah,
                 video_receiving = false;
                 return 0;
             }
-            ESP_LOGI(TAG, "VIDEO frames: %d", video_total_frames);
             video_state = 1;
             send_ack(0x02);
             return 0;
@@ -800,9 +779,6 @@ static int data_access_cb(uint16_t ch, uint16_t ah,
                         free(frame_copy);
                     }
                 }
-
-                ESP_LOGI(TAG, "Frame %d: %d bytes -> queue",
-                         video_current_frame, video_frame_size);
                 video_current_frame++;
                 video_progress_percent = video_current_frame * 100 / video_total_frames;
                 if (video_current_frame >= video_total_frames) {
@@ -813,8 +789,6 @@ static int data_access_cb(uint16_t ch, uint16_t ah,
                 } else {
                     video_state = 1;
                 }
-
-                
             }
             return 0;
         }
@@ -886,10 +860,7 @@ static void ble_on_sync(void) {
     ble_att_set_preferred_mtu(247);
     uint8_t addr[6];
     ble_hs_id_copy_addr(ble_addr_type, addr, NULL);
-    ESP_LOGI(TAG, "BLE addr: %02x:%02x:%02x:%02x:%02x:%02x",
-             addr[5], addr[4], addr[3], addr[2], addr[1], addr[0]);
     start_advertising();
-    ESP_LOGI(TAG, "Advertising as \"%s\"", BLE_DEVICE_NAME);
 }
 
 static void ble_host_task(void *param) {
@@ -901,11 +872,9 @@ static void ble_host_task(void *param) {
 static void img_save_task(void *arg) {
     while (1) {
         if (xSemaphoreTake(jpeg_decode_sem, 0) == pdTRUE) {
-            int64_t t0 = esp_timer_get_time();
             esp_err_t err = decode_jpeg_to_rgb565(jpeg_buf, jpeg_expected,
                                                    g_image_data, IMAGE_SIZE);
             if (err == ESP_OK) {
-                ESP_LOGI(TAG, "Decode: %lld ms", (esp_timer_get_time() - t0) / 1000);
                 lcd_show_image_fast((uint16_t *)g_image_data);
                 save_image_to_flash(g_image_data, IMAGE_SIZE);
             }
@@ -930,8 +899,6 @@ static void video_decode_task(void *arg) {
         ESP_LOGI(TAG, "PLAYBACK START: %d frames", stored_video_frames);
         int64_t next_frame_us = 0;
         int64_t loop_t0 = esp_timer_get_time();
-        int64_t sum_read = 0, sum_dec = 0, sum_disp = 0;
-        int count = 0;
 
         for (int i = 0; i < stored_video_frames; i++) {
             if (!playback_active) break;
@@ -950,29 +917,10 @@ static void video_decode_task(void *arg) {
             while (esp_timer_get_time() < next_frame_us) { asm volatile("nop"); }
             next_frame_us += 47619;
 
-            int64_t t0 = esp_timer_get_time();
             esp_flash_read(NULL, jpeg_buf, frame_addr, frame_size);
-            int64_t t1 = esp_timer_get_time();
             decode_jpeg_to_rgb565(jpeg_buf, frame_size, vbuf[buf], IMAGE_SIZE);
-            int64_t t2 = esp_timer_get_time();
-
-            sum_read += (t1 - t0);
-            sum_dec  += (t2 - t1);
-            count++;
-            sum_disp += last_display_us;
 
             xQueueSend(display_queue, &buf, portMAX_DELAY);
-
-            int64_t elapsed = (esp_timer_get_time() - loop_t0) / 1000;
-            if (elapsed >= 1000) {
-                float fps = count * 1000.0f / elapsed;
-                ESP_LOGI(TAG, "STAT: %.1f fps | read: %lld ms | dec: %lld ms | disp: %lld ms | frames: %d",
-                         fps, sum_read / count / 1000, sum_dec / count / 1000,
-                         sum_disp / count / 1000, count);
-                loop_t0 = esp_timer_get_time();
-                sum_read = sum_dec = sum_disp = 0;
-                count = 0;
-            }
         }
         ESP_LOGI(TAG, "PLAYBACK END: %lld ms",
                  (esp_timer_get_time() - loop_t0) / 1000);
@@ -986,9 +934,6 @@ static void video_decode_task(void *arg) {
 static void video_display_task(void *arg) {
     int held_buf = -1;
     int smooth_dx = 0, smooth_dy = 0;
-    disp_log_t0 = esp_timer_get_time();
-    disp_direct_count = 0;
-    disp_blend_count = 0;
 
     while (1) {
         int buf;
@@ -1004,10 +949,7 @@ static void video_display_task(void *arg) {
             continue;
         }
 
-        int64_t t0 = esp_timer_get_time();
-
         lcd_show_image_fast((uint16_t *)vbuf[buf]);
-        disp_direct_count++;
 
         if (held_buf >= 0) {
             int raw_dx = 0, raw_dy = 0;
@@ -1015,11 +957,10 @@ static void video_display_task(void *arg) {
                         &raw_dx, &raw_dy);
             smooth_dx = (smooth_dx * 3 + raw_dx) / 4;
             smooth_dy = (smooth_dy * 3 + raw_dy) / 4;
-                        
+
             lcd_show_image_blend((uint16_t *)vbuf[held_buf],
                                   (uint16_t *)vbuf[buf],
                                   smooth_dx, smooth_dy);
-            disp_blend_count++;
 
             xQueueSend(buf_free_queue, &held_buf, portMAX_DELAY);
         }
@@ -1027,18 +968,6 @@ static void video_display_task(void *arg) {
         held_buf = buf;
         if (video_progress_percent >= 0) {
             show_video_progress(video_progress_percent);
-        }
-
-        last_display_us = esp_timer_get_time() - t0;
-
-        int64_t elapsed = (esp_timer_get_time() - disp_log_t0) / 1000;
-        if (elapsed >= 1000) {
-            float fps = (disp_direct_count + disp_blend_count) * 1000.0f / elapsed;
-            ESP_LOGI(TAG, "DISP: %.1f fps | direct: %d | blend: %d",
-                     fps, disp_direct_count, disp_blend_count);
-            disp_log_t0 = esp_timer_get_time();
-            disp_direct_count = 0;
-            disp_blend_count = 0;
         }
     }
 }
@@ -1114,10 +1043,8 @@ static void flash_write_task(void *arg) {
     while (1) {
         if (xQueueReceive(flash_queue, &item, pdMS_TO_TICKS(10000)) == pdTRUE) {
             if (item.data == NULL) {
-                ESP_LOGI(TAG, "FLASH_WR: all %d frames written, finalizing", wr_count);
                 finalize_video_save(wr_count);
                 playback_active = true;
-                ESP_LOGI(TAG, "VIDEO complete, playback started");
                 wr_count = 0;
                 continue;
             }
@@ -1135,12 +1062,9 @@ static void flash_write_task(void *arg) {
             }
         } else {
             if (video_receiving && wr_count > 0) {
-                ESP_LOGW(TAG, "FLASH_WR: timeout, %d/%d frames, saving anyway",
-                         wr_count, video_total_frames);
                 video_receiving = false;
                 finalize_video_save(wr_count);
                 playback_active = true;
-                ESP_LOGI(TAG, "VIDEO complete (partial), playback started");
                 wr_count = 0;
             }
         }
@@ -1170,7 +1094,7 @@ void app_main(void) {
     if (has_stored_video) {
         playback_active = true;
     }
-
+    
     nimble_port_init();
     ble_hs_cfg.sm_io_cap = BLE_HS_IO_NO_INPUT_OUTPUT;
     ble_hs_cfg.sm_bonding = 0;
@@ -1186,7 +1110,7 @@ void app_main(void) {
     ble_gatts_count_cfg(gatt_svcs);
     ble_gatts_add_svcs(gatt_svcs);
     ble_svc_gap_device_name_set(BLE_DEVICE_NAME);
-
+    
     img_save_sem = xSemaphoreCreateBinary();
     jpeg_decode_sem = xSemaphoreCreateBinary();
     flash_queue = xQueueCreate(16, sizeof(flash_write_item_t));
@@ -1204,7 +1128,6 @@ void app_main(void) {
         xTaskCreatePinnedToCore(video_decode_task, "vid_dec", 4096, NULL, 5, NULL, 0);
         xTaskCreatePinnedToCore(video_display_task, "vid_disp", 4096, NULL, 4, NULL, 1);
     }
-    
     xTaskCreatePinnedToCore(led_task, "led_task", 4096, NULL, 3, NULL, 1);
     nimble_port_freertos_init(ble_host_task);
 }
