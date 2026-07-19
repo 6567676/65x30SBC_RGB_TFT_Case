@@ -29,4 +29,4 @@ Full license: https://creativecommons.org/licenses/by-nc/4.0/
 
 其他
 
-此项目仅在瑞莎zero 3w，hyperOS 3完成验证
+此项目仅在瑞莎zero 3w，hyperOS 3完成验证1
